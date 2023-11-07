@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZelcoTyping</title>
+    <style>
+      body{
+        background-size: cover;
+      }
+        .kannzi {
+          text-align: center;
+          font-size: 300%;
+          margin-top: 3px;
+        }
+
+        .hiragana {
+          text-align: center;
+          font-size: 120%;
+          margin: 0;
+          margin-top: 10px;
+        }
+
+        .roumazi {
+          text-align: center;
+          font-size: 150%;
+          margin: 0;
+        }
+
+        .next {
+          text-align: center;
+          font-size: 120%;
+          margin: 0;
+        }
+
+        .text {
+          font-size: 150%;
+          background-color: #77edcc;
+          margin: 0px;
+          width: 210px;
+          height: 30px;
+          text-align: center;
+        }
+
+        .typing {
+          text-align: center;
+          color: green;
+          font-family: serif;
+          font-size: 120%;
+        }
+
+        .score {
+          text-align: center;
+          color: blue;
+          font-family: serif;
+          font-size: 200%;
+        }
+
+        .timer {
+          text-align: center;
+          color: blue;
+          font-family: serif;
+          font-size: 200%;
+        }
+
+        .gray {
+          color: gray;
+          margin: 0;
+        }
+
+        .green {
+          color: #77edcc;
+          margin: 0;
+        }
+
+        .orange {
+          color: orange;
+          margin: 0;
+        }
+
+        .gauge {
+          font-size: 80%;
+          text-align: center;
+        }
+
+        .black {
+          color: black;
+          margin: 0;
+        }
+
+        .copper {
+          color: #ff00ff;
+        }
+
+        .gorld {
+          color: #c1ab05;
+        }
+
+        .red {
+          color: red;
+        }
+
+        .silver {
+          color: #AFAFB0;
+        }
+
+        .yello {
+          color: yellow;
+        }
+
+        .purple {
+          color: purple;
+        }
+        .copper{
+          color:#752100;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="display">
+      <h1 id="hiragana" class="hiragana">ここにもんだいがひょうじされます</h1>
+      <h1 class="kannzi" id="kannzi">ここに問題が表示されます。</h1>
+      <h1 class="roumazi" id="roumazi">kokonimonndaigahyouzisareamsu</h1>
+      <h1 class="score" id="score">スコア: 0</h1>
+      <h1 class="timer" id="timer">残り: 60.00秒</h1>
+      <br />
+      <h1 class="next" id="next">NEXT➡ここに次の問題が表示されます</h1>
+
+      <h1 id="gauge" class="gauge">
+        <span class="green">[</span
+        ><span class="gray"
+          >|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||</span
+        ><span class="green">] </span>
+      </h1>
+      <h1 class="typing" id="typing">
+        タイプ数: 0　ミス: 01　正確率: 100%
+        <br />文章時間0s　TPS(文章)0打/秒　TPS(合計)0打/秒<br />連続タイプ数：0
+      </h1>
+      <center>
+        <input
+          type="text"
+          id="text"
+          class="text"
+          value="ゲームを開始"
+          onclick="start()"
+        />
+      </center>
+    </div>
+
+    <script>
+      // 漢字かな交じりの文章
+      const kannziArray = [
+        "四角い畳を丸く掃く",
+        "ポップコーンと寿司",
+        "宇宙船地球号",
+        "マグロとサーモンならマグロだろう",
+        "タイピングには癖が出る",
+        "夢有りてこそ",
+        "世界の半分をくれてやろう",
+        "夢はプログラマーです",
+        "世界最速の男に俺はなる！",
+        "致命的なチートを発見した",
+        "ドイツの技術は世界一",
+        "ジブラルタル海峡",
+        "崩壊スターレイル",
+        "リーサルエリミネーター",
+        "サイコパスは神アニメだ",
+        "そうかそうかつまり君はそんなやつなんだな",
+        "ニーナとアレキサンダーはどこ行った？",
+        "空は青く澄み渡り海を目指して歩く",
+        "怖いものなんて無い僕はらもう独りじゃない",
+        "墾田永年私財法",
+        "僕はガンダムで行く",
+        "モブサイコ100",
+        "たとえ世界を敵に回したとしても",
+        "教祖誕生",
+        "疾風怒濤",
+        "青天の霹靂",
+        "技術が無い人にしか見えない世界がある",
+        "かわいいは難しい",
+        "ユダはイエスの弟子だ",
+        "駆動騎士",
+        "チュッパチャップス",
+        "百聞は一見に如かず",
+        "誰かがパスカルを引用したら用心すべきだ",
+        "罪なき者だけが石を投げよ",
+        "メロスに蹴られた犬は彼を勇者とは思わないだろう",
+        "歯車が狂いだした",
+        "天上天下唯我独尊",
+        "図書館戦争",
+      ];
+
+      // ひらがなの文章
+      const hiraganaArray = [
+        "しかくいたたみをまるくはく",
+        "ぽっぷこーんとすし",
+        "うちゅうせんちきゅうごう",
+        "まぐろとさーもんならまぐろだろう",
+        "たいぴんぐにはくせがでる",
+        "ゆめありてこそ",
+        "せかいのはんぶんをくれてやろう",
+        "ゆめはぷろぐらまーです",
+        "せかいさいそくのおとこにおれはなる！",
+        "ちめいてきなちーとをはっけんした",
+        "どいつのぎじゅつはせかいいち",
+        "じぶらるたるかいきょう",
+        "ほうかいすたーれいる",
+        "りーさるえりみねーたー",
+        "さいこぱすはかみあにめだ",
+        "そうかそうかつまりきみはそんなやつなんだな",
+        "にーなとあれきさんだーはどこいった？",
+        "そらはあおくすみわたりうみをめざしてあるく",
+        "こわいものなんてないぼくらはもうひとりじゃない",
+        "こんでんえいねんしざいほう",
+        "ぼくはがんだむでいく",
+        "もぶさいこ100",
+        "たとえせかいをてきにまわしたとしても",
+        "きょうそたんじょう",
+        "しっぷうどうとう",
+        "せいてんのへきれき",
+        "ぎじゅつがないひとにしかみえないせかいがある",
+        "かわいいはむずかしい",
+        "ゆだはいえすのでしだ",
+        "くどうきし",
+        "ちゅっぱちゃっぷす",
+        "ひゃくぶんはいっけんにしかず",
+        "だれかがぱすかるをいんようしたらようじんすべきだ",
+        "つみなきものだけがいしをなげよ",
+        "めろすにけられたいぬはかれをゆうしゃとはおもわないだろう",
+        "はぐるまがくるいだした",
+        "てんじょうてんげゆいがどくそん",
+        "としょかんせんそう",
+      ];
+
+      // ローマ字の文章
+      const roumaziArray = [
+        "sikakuitatamiwomarukuhaku",
+        "poppuko-ntosusi",
+        "utyuusentikyuugou",
+        "magurotosa-monnnaramagurodarou",
+        "taipingunihakusegaderu",
+        "yumearitekoso",
+        "sekainohanbunwokureteyarou",
+        "yumehapurogurama-desu",
+        "sekaisaisokunootokoniorehanaru!",
+        "timeitekinati-towohakkensita",
+        "doitunogijutuhasekaiiti",
+        "jiburarutarukaikyou",
+        "houkaisuta-reiru",
+        "ri-saruerimine-ta-",
+        "saikopasuhakamianimeda",
+        "soukasoukatumarikimihasonnnayatunandana",
+        "ni-natoarekisanda-hadokoitta?",
+        "sorahaaokusumiwatariumiwomezasitearuku",
+        "kowaimononantenaibokurahamouhitorijanai",
+        "kondeneinensizaihou",
+        "bokuhagandamudeiku",
+        "mobusaiko100",
+        "tatoesekaiwotekinimawasitatositemo",
+        "kyousotanjou",
+        "sippuudotou",
+        "seitennnohekireki",
+        "gijutuganaihitonisikamienaisekaigaaru",
+        "kawaiihamuzukasii",
+        "yudahaiesunodesida",
+        "kudoukisi",
+        "tyuppatyappusu",
+        "hyakubunhaikkennnisikazu",
+        "darekagapasukaruwoinyousitarayoujinsubekida",
+        "tuminakimonodakegaisiwonageyo",
+        "merosunikeraretainuhakarewoyuusyatohaomowanaidarou",
+        "hagurumagakuruidasita",
+        "tenjoutengeyuigadokuson",
+        "tosyokansensou",
+      ];
+
+      var timerInterval;
+      var sixtimerInterval;
+      var inputrock;
+      var order;
+      var timer;
+      var secondtimer;
+      var charactertimerrock;
+      var charactertimer1;
+      var charactertimer2;
+      var nexttimer = true;
+      var audio = new Audio(
+        "https://drive.google.com/uc?id=1RCP8BWUg_pT7qdxkAbl3jbspNR8NhvkI&.m4a"
+      );
+      var homeBGM = new Audio(
+        "https://drive.google.com/uc?id=1DglrvKuGD_kODLNrNfkwRt2DnjYnXwGJ&.m4a"
+      );
+      var batoleBGM = new Audio(
+        "https://drive.google.com/uc?id=1dEv8rHwQfq-j_KGQB-PtVuuGh-60OaLN&.m4a"
+      );
+
+      bgm();
+      function bgm() {
+        homeBGM.play();
+        var bgmInterval = setInterval(bgmintervalplay, 82000);
+      }
+
+      function bgmintervalplay() {
+        homeBGM.play();
+      }
+      function start() {
+        audio.play();
+        homeBGM.pause();
+        batoleBGM.play();
+        inputrock = false;
+        timer = 400;
+        secondtimer = "false";
+        charactertimerrock = 0;
+        charactertimer1 = 600;
+        charactertimer2 = 0;
+        order = [];
+
+        for (var i = 0; i < 300; i++) {
+          order.push(Math.floor(Math.random() * kannziArray.length));
+        }
+
+        if (nexttimer) {
+          timerInterval = setInterval(threeSecondTimer, 10);
+          nexttimer = false;
+        }
+
+        document.getElementById("hiragana").innerHTML = hiraganaArray[order[0]];
+        document.getElementById("kannzi").innerHTML = kannziArray[order[0]];
+        document.getElementById("roumazi").innerHTML = roumaziArray[order[0]];
+        document.getElementById("next").innerHTML =
+          "NEXT➡" + kannziArray[order[1]];
+        document.getElementById("score").innerHTML = "3";
+      }
+
+      function threeSecondTimer() {
+        if (secondtimer == "false") {
+          document.getElementById("score").innerHTML = Math.floor(timer / 100);
+          timer--;
+        }
+
+        if (timer === 99 && secondtimer == "false") {
+          document.getElementById("score").innerHTML = "スタート！！";
+          document.getElementById("text").value = "";
+          secondtimer = "true";
+          timer = 6000;
+          input();
+          inputrock = true;
+        }
+
+        if (secondtimer == "true") {
+          timer--;
+          if (timer / 100 == Math.floor(timer / 100)) {
+            displaytimer = timer / 100 + ".00";
+          } else if (timer / 10 == Math.floor(timer / 10)) {
+            displaytimer = timer / 100 + "0";
+          } else {
+            displaytimer = timer / 100;
+          }
+          document.getElementById("timer").innerHTML =
+            "残り" + displaytimer + "秒";
+        }
+
+        if (timer === 0 && secondtimer == "true") {
+          nexttimer = true;
+          clearInterval(timerInterval);
+          document.getElementById("kannzi").innerHTML =
+            "<span class='orange'>Result</span>";
+          document.getElementById("hiragana").innerHTML = "";
+          document.getElementById("roumazi").innerHTML = "";
+          document.getElementById("next").innerHTML = "";
+          document.getElementById("text").value = "再プレイ";
+          batoleBGM.pause();
+          homeBGM.play();
+
+          var scoreToGradeMap = [
+            "評価：D(出直してこい)",
+            "評価：C-",
+            "評価：C",
+            "評価：C+",
+            "評価：B-",
+            "評価：B",
+            "評価：B+",
+            "評価：A-",
+            "評価：A",
+            "評価：A+",
+            "<span class='yello' >称号：淡黄の称号</span>",
+            "<span class='yello' >称号：タイパーの資格</span>",
+            "<span class='yello' >称号：初級タイパー</span>",
+            "<span class='yello' >称号：初心者脱却タイパー</span>",
+            "<span class='yello' >称号：普通タイパー</span>",
+            "<span class='red'   >称号：紅蓮の称号</span>",
+            "<span class='red'   >称号：上級タイパー？</span>",
+            "<span class='red'   >称号：アンタなんて別にすごくないんだからねッ</span>",
+            "<span class='red'   >称号：ここからが本番</span>",
+            "<span class='red'   >称号：赤月の猛者</span>",
+            "<span class='purple'>称号：紫電の称号</span>",
+            "<span class='purple'>称号：キーの速打手</span>",
+            "<span class='purple'>称号：真・上級タイパー</span>",
+            "<span class='purple'>称号：タイピングマスター</span>",
+            "<span class='purple'>称号：天下のタイピングマスター</span>",
+            "<span class='copper'>称号：赤銅の称号</span>",
+            "<span class='copper'>称号：猛者たちの領域</span>",
+            "<span class='copper'>称号：王者君臨</span>",
+            "<span class='copper'>称号：タイピングの聖騎士</span>",
+            "<span class='copper'>称号：伝説のタイパー</span>",
+            "<span class='silver'>称号：白銀の称号</span>",
+            "<span class='silver'>称号：タイピングの王</span>",
+            "<span class='silver'>称号：タイピングの帝王</span>",
+            "<span class='silver'>称号：タイピングの覇王</span>",
+            "<span class='silver'>称号：覇王の道</span>",
+            "<span class='gorld' >称号：黄金の称号</span>",
+            "<span class='gorld' >称号：タイピングの龍王</span>",
+            "<span class='gorld' >称号：タイピングの神龍</span>",
+            "<span class='gorld' >称号：タイピングの絶対神</span>",
+            "<span class='gorld' >称号：最高の称号",
+          ];
+
+          document.getElementById("timer").innerHTML =
+            scoreToGradeMap[Math.floor(displayscore / 15000)];
+
+          if (displayscore > 410000) {
+            document.getElementById("timer").innerHTML = "Over Rank";
+          }
+
+          if (displayscore === 77000) {
+            document.getElementById("timer").innerHTML =
+              "<span class='gorld'>称号：ラッキー7!!</span>";
+          }
+
+          inputrock = false;
+        }
+
+        if (charactertimerrock == 1) {
+          charactertimerrock = 0;
+          charactertimer2 = timer;
+        }
+      }
+
+      var orderCounter,
+        count,
+        score,
+        displayscore,
+        answer,
+        miss,
+        accuracy,
+        continuous,
+        maxcontinuous,
+        tps,
+        alltps,
+        gauge,
+        text1,
+        text2,
+        continuouscount,
+        nlock,
+        clearlock,
+        jalock,
+        ylock,
+        corectAnswerinput;
+
+      function input() {
+        var textElement = document.getElementById("text");
+
+        orderCounter = 0;
+        count = 0;
+        score = 0;
+        displayscore = 0;
+        answer = 0;
+        miss = 0;
+        accuracy = 0;
+        continuous = 0;
+        maxcontinuous = 0;
+        tps = 0;
+        alltps = 0;
+        gauge = "";
+        text1 = "";
+        text2 = "";
+        cheatlock1 = false;
+        cheatbox = "";
+        cheatlock2 = false;
+        continuouscount = 0;
+        nlock = 0;
+        clearlock = true;
+        jalock = 0;
+        ylock = false;
+        corectAnswerinput = "";
+
+        textElement.oninput = function () {
+          if (inputrock) {
+            charactertimerrock = 1;
+            clearlock = true;
+            ylock = false;
+            text2 = "";
+
+            let texttime = (charactertimer1 - charactertimer2) / 100;
+            tps = Math.floor((count / texttime) * 100) / 100;
+            tps = tps.toFixed(2);
+            texttime = texttime.toFixed(2);
+
+            var input = textElement.value;
+            var corectAnswer = roumaziArray[order[orderCounter]][count];
+            if (corectAnswerinput !== "") {
+              corectAnswer = corectAnswerinput;
+            }
+            var secondAnswer = roumaziArray[order[orderCounter]][count + 1];
+            var thirdAnswer = roumaziArray[order[orderCounter]][count + 2];
+            document.getElementById("text").value = "";
+
+            nlock--;
+            if (
+              input == "n" &&
+              nlock <= 0 &&
+              corectAnswer == "n" &&
+              secondAnswer !== "a" &&
+              secondAnswer !== "i" &&
+              secondAnswer !== "u" &&
+              secondAnswer !== "o" &&
+              secondAnswer !== "n"
+            ) {
+              //nの対応
+              nlock = 2;
+            }
+
+            if (input == "z" && corectAnswer == "j") {
+              //j=zの対応
+              if (
+                secondAnswer == "a" ||
+                secondAnswer == "u" ||
+                secondAnswer == "e" ||
+                secondAnswer == "o"
+              ) {
+                answer++;
+                count++;
+                score += 500;
+                text1 += "z";
+                text2 += "y";
+                input = "j";
+                corectAnswerinput = "y";
+                continuous++;
+                clearlock = false;
+                ylock = true;
+                document.getElementById("kannzi").innerHTML =
+                  kannziArray[order[orderCounter]];
+              }
+              if (secondAnswer == "i") {
+                answer++;
+                count++;
+                score += 500;
+                text1 += "z";
+                input = "j";
+                continuous++;
+                clearlock = false;
+                document.getElementById("kannzi").innerHTML =
+                  kannziArray[order[orderCounter]];
+              }
+            }
+
+            jalock--;
+            if (
+              input == "j" &&
+              (secondAnswer == "a" ||
+                secondAnswer == "u" ||
+                secondAnswer == "e" ||
+                secondAnswer == "o") &&
+              jalock <= 0
+            ) {
+              jalock = 2;
+            }
+
+            if (input == "c") {
+              //ca対応
+              if (
+                (corectAnswer == "k" &&
+                  (secondAnswer == "a" ||
+                    secondAnswer == "u" ||
+                    secondAnswer == "o")) ||
+                (corectAnswer == "s" &&
+                  (secondAnswer == "i" || secondAnswer == "e"))
+              ) {
+                count++;
+                answer++;
+                score += 500;
+                text1 += "c";
+                input = corectAnswer;
+                continuous++;
+                corectAnswerinput = "";
+                clearlock = false;
+                document.getElementById("kannzi").innerHTML =
+                  kannziArray[order[orderCounter]];
+              }
+            }
+
+            if (input == "x" && corectAnswer == "n") {
+              //xn対応
+              if (
+                secondAnswer !== "a" &&
+                secondAnswer !== "i" &&
+                secondAnswer !== "u" &&
+                secondAnswer !== "e" &&
+                secondAnswer !== "o"
+              ) {
+                //な行でない場合のみ
+                score += 500;
+                answer++;
+                text1 += "x";
+                input = "n";
+                continuous++;
+                corectAnswerinput = "";
+                clearlock = true;
+                document.getElementById("kannzi").innerHTML =
+                  kannziArray[order[orderCounter]];
+              }
+              if (secondAnswer == "n" && thirdAnswer == "n") {
+                //nnnに対応
+                count++;
+                answer++;
+                score += 500;
+                text1 += "x";
+                input == "n";
+                continuous++;
+                corectAnswerinput = "";
+                clearlock = false;
+                document.getElementById("kannzi").innerHTML =
+                  kannziArray[order[orderCounter]];
+              }
+            }
+
+            if (input == "c") {
+              cheatlock1 = true;
+            }
+
+            if (cheatlock1) {
+              cheatbox += input;
+            }
+
+            if (cheatbox.length == 5) {
+              if (cheatbox == "cheat") {
+                miss = -1;
+                cheatlock2 = true;
+              } else {
+                cheatlock1 = false;
+                cheatbox = "";
+              }
+            }
+
+            if (input == "*" && cheatlock2) {
+              input = corectAnswer;
+            }
+
+            if (input == corectAnswer) {
+              if (clearlock) {
+                count++;
+                answer++;
+                score += 500;
+                text1 += input;
+                continuous++;
+                corectAnswerinput = "";
+                document.getElementById("kannzi").innerHTML =
+                  kannziArray[order[orderCounter]];
+              }
+            } else {
+              if (nlock == 1 && input == "n") {
+                text1 += "n";
+                score += 500;
+                answer++;
+              } else if (jalock == 1 && input == "y") {
+                text1 += "y";
+                score += 500;
+                answer++;
+              } else {
+                miss++;
+                continuous = "";
+                document.getElementById("kannzi").innerHTML =
+                  "<span class='red'>" +
+                  kannziArray[order[orderCounter]] +
+                  "</span>";
+              }
+            }
+
+            for (
+              var i = count;
+              i < roumaziArray[order[orderCounter]].length;
+              i++
+            ) {
+              text2 += roumaziArray[order[orderCounter]][i];
+            }
+
+            if (ylock) {
+              count--;
+            }
+
+            if (count == roumaziArray[order[orderCounter]].length) {
+              charactertimer1 = charactertimer2;
+              orderCounter++;
+              audio.play();
+
+              document.getElementById("hiragana").innerHTML =
+                hiraganaArray[order[orderCounter]];
+              document.getElementById("kannzi").innerHTML =
+                kannziArray[order[orderCounter]];
+              document.getElementById("roumazi").innerHTML =
+                roumaziArray[order[orderCounter]];
+              document.getElementById("next").innerHTML =
+                "NEXT➡" + kannziArray[order[orderCounter + 1]];
+              text1 = "";
+              text2 = roumaziArray[order[orderCounter]];
+              count = 0;
+            }
+
+            accuracy = Math.floor((answer / (answer + miss)) * 10000) / 100;
+            accuracy = accuracy.toFixed(2);
+
+            alltps =
+              Math.floor((answer / (6000 - charactertimer2)) * 10000) / 100;
+            alltps = alltps.toFixed(2);
+
+            displayscore = Math.floor((score * accuracy) / 100);
+            var continuoustemporary =
+              continuous - Math.floor(continuous / 100) * 100;
+            var gauge = "<span class='green'>[";
+            for (var i = 0; i < continuoustemporary; i++) {
+              gauge += "|";
+            }
+            gauge += "</span><span class='gray'>";
+            for (var i = continuoustemporary; i < 99; i++) {
+              gauge += "|";
+            }
+            gauge += "</span><span class='green'>]</span>";
+
+            if (continuoustemporary + 1 == 100) {
+              continuouscount++;
+              gauge =
+                "<span class='orange'>[|||||||||||||||||||||||||||||||||||||||||||||||" +
+                continuouscount +
+                "||||||||||||||||||||||||||||||||||||||||||||||||||||]</span>";
+              score += 25000;
+            }
+
+            document.getElementById("roumazi").innerHTML =
+              "<span class='gray'>" +
+              text1 +
+              "</span><span class='black'>" +
+              text2 +
+              "</span>";
+            document.getElementById("score").innerHTML =
+              "スコア：" + displayscore;
+            document.getElementById("typing").innerHTML =
+              "タイプ数：" +
+              answer +
+              "　ミス：" +
+              miss +
+              "　正確率：" +
+              accuracy +
+              "%<br><span onclick ='timerreset()'>文章時間</span>" +
+              texttime +
+              "s　TPS(文章)" +
+              tps +
+              "打/秒　TPS(合計)" +
+              alltps +
+              "打/秒<br>連続タイプ数：" +
+              continuous;
+            document.getElementById("gauge").innerHTML = gauge;
+          }
+        };
+      }
+
+      function timerreset() {
+        if (cheatlock2) {
+          timer = 10;
+        }
+      }
+    </script>
+  </body>
+</html>
